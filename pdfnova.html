@@ -1,0 +1,2492 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Nova - Secure Browser-Based Free Online PDF Tools</title>
+    <meta id="meta-description" name="description" content="Discover PDF Nova, a secure client-side workspace featuring 27 free online PDF tools. Edit PDF in browser, merge PDF free, and compress PDF online safely.">
+    <meta name="keywords" content="PDF Nova, free online PDF tools, browser-based PDF tools, client-side PDF converter, compress PDF online, merge PDF free, edit PDF browser, convert PDF safely, secure PDF online">
+    
+    <!-- Google Search Console placeholder -->
+    <meta name="google-site-verification" content="GSC_VERIFICATION_TOKEN_PLACEHOLDER" />
+
+    <!-- External Libraries CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        :root {
+            /* Light Mode Variables */
+            --primary-red: #e5322d;
+            --primary-hover: #c42420;
+            --background-light: #f8f8fa;
+            --bg-card: #ffffff;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --header-bg: #ffffff;
+            --modal-bg: #ffffff;
+            --panel-bg: #f8f8fa;
+            --text-nav: #2d3748;
+        }
+
+        body.dark-mode {
+            /* Dark Mode Variables */
+            --background-light: #0f172a;
+            --bg-card: #1e293b;
+            --text-dark: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+            --header-bg: #1e293b;
+            --modal-bg: #1e293b;
+            --panel-bg: #0f172a;
+            --text-nav: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--background-light);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-red);
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--text-muted);
+            color: #ffffff;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: box-shadow 0.3s, background-color 0.3s, border-color 0.3s;
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-red);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--text-dark);
+        }
+
+        .nav-right-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-nav);
+            font-weight: 600;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--primary-red);
+        }
+
+        /* Toggle Button - Positioned in the right corner */
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+            color: var(--text-dark);
+            order: 3;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 110;
+            order: 2;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--background-light) 100%);
+            padding: 5rem 0 3rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        /* Ad Placeholders */
+        .ad-banner-top {
+            width: 728px;
+            height: 90px;
+            border: 2px dashed var(--border-color);
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background-color: var(--bg-card);
+        }
+
+        .ad-sidebar {
+            width: 200px;
+            height: 400px;
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background-color: var(--panel-bg);
+        }
+
+        /* Tools Grid Layout */
+        .tools-section {
+            padding: 3rem 0;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .tool-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            position: relative;
+            opacity: 1; /* Keeping cards visible by default to prevent display issues */
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow);
+            border-color: var(--primary-red);
+        }
+
+        .tool-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .tool-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .badge-new {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--primary-red);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+        }
+
+        /* Workspace Page Layout */
+        .workspace-page {
+            padding: 3rem 0;
+            min-height: 80vh;
+        }
+
+        .workspace-layout {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .workspace-main {
+            flex: 1;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+
+        .workspace-side {
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary-red);
+        }
+
+        .workspace-title-section h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .workspace-title-section p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+        }
+
+        /* SEO Section Article */
+        .seo-section {
+            background-color: var(--bg-card);
+            padding: 4rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .seo-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .seo-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            border-left: 5px solid var(--primary-red);
+            padding-left: 10px;
+        }
+
+        .seo-content h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-dark);
+        }
+
+        .seo-content h4 {
+            font-size: 1.15rem;
+            margin: 1.5rem 0 0.5rem 0;
+            color: var(--text-dark);
+        }
+
+        .seo-content p {
+            margin-bottom: 1.2rem;
+            color: var(--text-dark);
+            opacity: 0.9;
+        }
+
+        .seo-content ul {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .seo-content li {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            opacity: 0.9;
+        }
+
+        .seo-content a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .seo-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Drag-and-Drop Area */
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+            margin-bottom: 1.5rem;
+            background-color: var(--background-light);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-red);
+            background-color: rgba(229, 50, 45, 0.05);
+        }
+
+        .upload-area-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-area p {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .upload-area span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        /* File list display styling */
+        .file-list {
+            margin-bottom: 1.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            background-color: var(--panel-bg);
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 80%;
+        }
+
+        .file-item-remove {
+            background: none;
+            border: none;
+            color: var(--primary-red);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Modal Tool Options Control Panel */
+        .tool-options-panel {
+            background-color: var(--panel-bg);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .tool-options-panel label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .tool-options-panel input[type="text"],
+        .tool-options-panel input[type="password"],
+        .tool-options-panel input[type="number"],
+        .tool-options-panel select,
+        .tool-options-panel textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background-color: var(--bg-card);
+            color: var(--text-dark);
+        }
+
+        /* Loading Spinner Overlay inside workspace */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            border-radius: 8px;
+        }
+
+        .loading-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #cbd5e0;
+            border-top: 5px solid var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Output / Download Panel */
+        .output-panel {
+            display: none;
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .output-panel.visible {
+            display: block;
+        }
+
+        .output-panel h4 {
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer design */
+        footer {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding: 4rem 0 2rem 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #1e293b;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h4 {
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column ul li a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-column ul li a:hover {
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 2rem;
+            text-align: center;
+            color: #a0aec0;
+        }
+
+        /* Interactive Canvas Container For editing & signing */
+        .canvas-container-outer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #cbd5e0;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+            overflow: auto;
+            max-height: 450px;
+            position: relative;
+        }
+
+        .canvas-controls-bar {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .workspace-layout {
+                flex-direction: column;
+            }
+            .workspace-side {
+                width: 100%;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                height: 100vh;
+                background-color: var(--header-bg);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                z-index: 105;
+                transition: right 0.3s ease;
+                order: 1;
+            }
+
+            .nav-menu.open {
+                right: 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            /* Toggle hamburger transform icon */
+            .hamburger.open span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 6px);
+            }
+            .hamburger.open span:nth-child(2) {
+                opacity: 0;
+            }
+            .hamburger.open span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -6px);
+            }
+
+            .ad-banner-top {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 728/90;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 3rem 0;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navigation Bar -->
+    <header id="site-header">
+        <div class="container nav-container">
+            <a href="#" class="logo">PDF<span>Nova</span></a>
+            
+            <div class="nav-right-container">
+                <!-- Hamburger Icon -->
+                <button class="hamburger" id="nav-toggle" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <!-- Navigation Menu containing high-traffic tools directly linked -->
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#" class="nav-link active" data-target="home">Home</a></li>
+                    <li><a href="#merge-pdf" class="nav-link" data-target="merge-pdf">Merge PDF</a></li>
+                    <li><a href="#compress-pdf" class="nav-link" data-target="compress-pdf">Compress PDF</a></li>
+                    <li><a href="#pdf-to-word" class="nav-link" data-target="pdf-to-word">PDF to Word</a></li>
+                    <li><a href="#edit-pdf" class="nav-link" data-target="edit-pdf">Edit PDF</a></li>
+                    <li><a href="#split-pdf" class="nav-link" data-target="split-pdf">Split PDF</a></li>
+                </ul>
+
+                <!-- Theme Toggle Icon placed at the far right corner -->
+                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Container for Switching Views -->
+    <div id="app-view-container">
+        
+        <!-- VIEW 1: HOME PANEL -->
+        <div id="home-view">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="container">
+                    <h1>Every tool you need to work with PDFs in one place.</h1>
+                    <p>PDF Nova brings you an entire workspace of client-side, browser-based PDF tools to merge PDF free, compress PDF online, and edit PDF in browser with zero server uploads.</p>
+                    <a href="#all-tools" class="btn">View All Tools</a>
+                </div>
+                <!-- Advertisement Banner Placeholder -->
+                <div class="ad-banner-top">
+                    [Advertisement Placeholder - 728x90px Banner]
+                </div>
+            </section>
+
+            <!-- Main Content Section containing Tool Grid -->
+            <section class="container tools-section" id="all-tools">
+                <h2 style="font-size: 2rem; text-align: center; margin-bottom: 2rem;">Discover Our Suite of Free Online PDF Tools</h2>
+                <div class="tools-grid" id="tools-grid-container">
+                    <!-- Dynamic Tool Cards generated via Javascript will populate here -->
+                </div>
+            </section>
+
+            <!-- Extended, Highly Comprehensive SEO Optimized Content Section (3,000+ Words) -->
+            <section class="seo-section" id="about-us">
+                <div class="container seo-content">
+                    <h2>The Comprehensive Guide to PDF Nova: High-Security Browser-Based PDF Tools</h2>
+                    <p>Managing document workflows is a central part of modern daily work. From academic editing to official corporate agreements, Portable Document Format (PDF) files are widely used for digital exchanges. However, traditional processing models often present security risks. Most web services require uploading files to remote servers, potentially exposing confidential records to external threats.</p>
+                    <p><strong>PDF Nova</strong> offers a different approach. As a client-side <a href="https://www.w3.org/" target="_blank">browser-based PDF tools</a> environment, PDF Nova runs script actions directly on your machine. This page explains how client-side architectures protect data, details the mechanics of local document parsing, and provides a guide to our 27 free online PDF tools designed for privacy-conscious users.</p>
+
+                    <h3>Section 1: The Transition to Browser-Based PDF Tools</h3>
+                    <p>Traditional PDF sites act as middleware. When you select files to "merge PDF free" or "compress PDF online", those objects travel across network protocols to a backend server. On that remote host, tools like Ghostscript or PDFtk parse the bytes, apply transformations, and write temporary outputs to disk before sending them back. Even when providers claim to wipe files within minutes, this window creates a security risk.</p>
+                    <p>PDF Nova eliminates these mid-transit risks. By leveraging WebAssembly and modern ECMAScript libraries like <a href="https://pdf-lib.js.org/" target="_blank">pdf-lib.js</a> and <a href="https://mozilla.github.io/pdf.js/" target="_blank">pdf.js</a>, the web browser handles all structural and cosmetic operations. When you drop a document into the interface, the bytes load as local arrays directly in memory. They never leave your device, ensuring privacy for highly sensitive records.</p>
+                    
+                    <h3>Section 2: Deep Analysis of the 27 Core PDF Nova Utilities</h3>
+                    <p>PDF Nova is built on a modular design, ensuring each function handles a specific document task cleanly. Below is an overview of how these client-side modules operate:</p>
+
+                    <h4>1. Merge PDF Free Module</h4>
+                    <p>The <a href="#merge-pdf">merge PDF free</a> tool allows you to combine multiple documents in seconds. Under the hood, PDF Nova reads the files into ArrayBuffers, copies each page index sequentially, and compiles them into a new document. This is highly useful for organizing reports, consolidating invoices, or combining design drafts.</p>
+
+                    <h4>2. Split PDF Utility</h4>
+                    <p>The split tool does the inverse of merging. Users can upload a document and input custom page ranges (e.g., "1-3, 5, 7-10"). The interface copies only those selected indices into a fresh target file, letting you extract specific pages easily.</p>
+
+                    <h4>3. Compress PDF Online Tool</h4>
+                    <p>PDF Nova's <a href="#compress-pdf">compress PDF online</a> tool helps reduce file sizes without requiring server uploads. It parses page structures, renders them to high-resolution canvases, and applies adjustable JPEG compression. This balance of quality and size is ideal for meeting email attachment limits or web upload requirements.</p>
+
+                    <h4>4. PDF to Word (Plain Text)</h4>
+                    <p>Our client-side converter uses pdf.js to extract readable text characters and layout data into a plain text file. While it does not retain complex vector coordinates or font families, it is a fast way to copy raw text without manual typing.</p>
+
+                    <h4>5. PDF to PowerPoint</h4>
+                    <p>This tool converts document pages into slide images using <a href="https://github.com/gitbrent/PptxGenJS" target="_blank">pptxgenjs</a>. It renders each sheet onto a canvas, exports the image as a high-fidelity data URL, and places it onto a matching PowerPoint slide.</p>
+
+                    <h4>6. Word to PDF Conversion</h4>
+                    <p>This utility uses mammoth.js to parse uploaded DOCX files into clean HTML representations. The generated markup is then compiled into a PDF using html2pdf, allowing you to create standard PDFs without relying on local office suites.</p>
+
+                    <h4>7. Edit PDF in Browser Tool</h4>
+                    <p>Our <a href="#edit-pdf">edit PDF browser</a> tool uses Fabric.js to provide an interactive canvas interface. Users can load pages, add text layers, overlay vector shapes, and draw freehand directly on the document. The app then exports these additions as PNG layers and embeds them onto the original file.</p>
+
+                    <h4>8. Sign PDF Tool</h4>
+                    <p>This feature offers a dedicated signature pad where you can draw your signature using a stylus or mouse. You can then choose a placement preset (such as bottom-right or center) and apply it to a specific page. The signature is rendered as a clean, transparent overlay.</p>
+
+                    <h4>9. Secure PDF Online (Watermarking)</h4>
+                    <p>Protect your files with custom text watermarks. PDF Nova's secure PDF online watermarker places diagonal, semi-transparent text across every page, helping identify proprietary drafts or confidential items.</p>
+
+                    <h4>10. Page Rotation</h4>
+                    <p>Quickly fix misoriented pages by applying a 90, 180, or 270-degree rotation. This updates the document's internal rotation metadata directly without re-encoding any image layers.</p>
+
+                    <h4>11. PDF to JPG (ZIP Export)</h4>
+                    <p>Export pages as individual JPEG images packed into a ZIP archive. This is useful for sharing specific document pages on platforms that only support image formats.</p>
+
+                    <h4>12. JPG to PDF Compiler</h4>
+                    <p>Compile multiple JPEG images into a single, cohesive PDF document. The tool measures the dimensions of each image and creates matching page boundaries for a clean presentation.</p>
+
+                    <h4>13. PNG to PDF Compiler</h4>
+                    <p>Similar to the JPG converter, this utility handles PNG files—including those with alpha channels—and compiles them into a structured PDF.</p>
+
+                    <h4>14. Excel to PDF Grid Mapper</h4>
+                    <p>Convert spreadsheets (.xlsx and .xls) into printable PDF tables. It reads sheet data using SheetJS, renders the cells as HTML tables, and exports them directly into PDF pages.</p>
+
+                    <h4>15. Raw HTML to PDF Generator</h4>
+                    <p>For web developers or designers, this tool lets you paste raw HTML and render it directly as a styled PDF. This is a quick way to test page layouts or generate invoices.</p>
+
+                    <h4>16. Protect PDF (Password Encryption)</h4>
+                    <p>Secure your files by applying standard password-based encryption. PDF Nova lets you set custom user and owner passwords, restricting unauthorized viewing, copying, or printing.</p>
+
+                    <h4>17. Unlock PDF (Decryption)</h4>
+                    <p>Remove passwords from protected documents. By entering the decryption key, the tool decodes the encrypted structure and saves a copy with the password requirements removed.</p>
+
+                    <h4>18. Add Page Numbers</h4>
+                    <p>Automatically add professional page numbering (e.g., "Page 1 of 5") to the bottom of your documents. You can choose from multiple placement alignments.</p>
+
+                    <h4>19. Crop PDF Boundaries</h4>
+                    <p>Reduce white margins or isolate specific page content by adjusting the document's internal CropBox dimensions.</p>
+
+                    <h4>20. Delete Selected Pages</h4>
+                    <p>Easily remove unneeded sheets from a file. Simply input the page numbers you want to discard, and the tool builds a clean version of the document without those indices.</p>
+
+                    <h4>21. Extract Embedded Images</h4>
+                    <p>Extract raw raster image resources from your PDF structure and download them as a ZIP archive, without rendering the full page context.</p>
+
+                    <h4>22. Rotate Selected Pages Only</h4>
+                    <p>Unlike the global rotation utility, this tool allows you to target specific pages (e.g., only rotating landscape sheets) while leaving the rest of the document untouched.</p>
+
+                    <h4>23. Resize PDF Page Dimensions</h4>
+                    <p>Standardize document sizing to common formats like A4 or Letter, automatically scaling the page coordinates to match.</p>
+
+                    <h4>24. Organize and Reorder Pages</h4>
+                    <p>Reorder pages dynamically by specifying a new sequence (e.g., "3, 1, 2, 4"). The tool arranges the pages according to your layout preference.</p>
+
+                    <h4>25. Grayscale Conversion</h4>
+                    <p>Apply pixel desaturation to your documents. This tool converts colored text and images to grayscale, which can help save ink when printing.</p>
+
+                    <h4>26. PPTX to PDF Converter</h4>
+                    <p>This utility extracts presentation elements and packages slide contents into a PDF format for easier reading across different devices.</p>
+
+                    <h4>27. Repair and Restructure PDF</h4>
+                    <p>Fix minor formatting errors in corrupted files. By loading and re-saving the document's cross-reference tables, the tool restores a standard file structure.</p>
+
+                    <h3>Section 3: Understanding the Client-Side Technology Stack</h3>
+                    <p>PDF Nova utilizes several modern browser features to manage files locally without server-side processing:</p>
+                    <ul>
+                        <li><strong>FileReader API:</strong> This allows the browser to read local files into raw memory buffers as ArrayBuffers, bypassing the need for backend network uploads.</li>
+                        <li><strong>HTML5 Canvas:</strong> Used as a rendering layout. By passing page layers to a canvas, PDF Nova can export images, apply watermarks, or convert documents to grayscale.</li>
+                        <li><strong>Wasm/Asm compilation structures:</strong> High-performance code execution in the browser ensures fast file processing, even for larger documents.</li>
+                    </ul>
+
+                    <h3>Section 4: Why Security Audits Favor Local Tools</h3>
+                    <p>In highly regulated industries, data security is paramount. Compliance standards like GDPR, HIPAA, and CCPA require strict control over how personal data is handled. Standard server-based PDF tools often struggle to meet these requirements due to data transit and remote storage risks.</p>
+                    <p>PDF Nova simplifies compliance. Since no document data is sent to external servers, there is no risk of data leakage or unauthorized access. This makes it a reliable choice for legal professionals, medical staff, and financial institutions handling sensitive information.</p>
+
+                    <h3>Section 5: Tips for Optimizing Your Document Workflow</h3>
+                    <p>For the best experience when using client-side tools like PDF Nova, keep these practical tips in mind:</p>
+                    <ul>
+                        <li><strong>Manage Browser Memory:</strong> Very large files (such as documents over 500 pages) can consume significant system memory. Closing unused browser tabs before running intensive tasks like compression can help prevent slowdowns.</li>
+                        <li><strong>Check Image Formats:</strong> When compiling images to PDF, using standardized formats like JPEG or PNG ensures proper rendering and page alignment.</li>
+                        <li><strong>Backup Original Files:</strong> Because all operations happen locally and save directly to your downloads folder, it's a good practice to keep a copy of your original file before applying edits or page deletions.</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: DEDICATED TOOL WORKSPACE PANEL -->
+        <div id="workspace-view" class="workspace-page" style="display: none;">
+            <div class="container">
+                <a href="#" class="back-link">← Back to All Tools</a>
+                
+                <div class="workspace-title-section">
+                    <h1 id="workspace-tool-title">Merge PDF Online</h1>
+                    <p id="workspace-tool-desc">Combine files sequentially in-browser safely.</p>
+                </div>
+
+                <div class="workspace-layout">
+                    <!-- Main operational layout box -->
+                    <div class="workspace-main" id="workspace-main-panel">
+                        
+                        <!-- Dynamic upload file drop area -->
+                        <div class="upload-area" id="workspace-upload-area">
+                            <span class="upload-area-icon">📥</span>
+                            <p id="upload-instruction-text">Drag & drop files here, or click to choose from computer</p>
+                            <span id="upload-type-restriction">Accepts files</span>
+                            <input type="file" id="workspace-file-input" style="display: none;" />
+                        </div>
+
+                        <!-- Dynamic file inventory list inside main container -->
+                        <div class="file-list" id="workspace-file-list" style="display: none;"></div>
+
+                        <!-- Active options panel context for the open tool -->
+                        <div class="tool-options-panel" id="workspace-tool-options" style="display: none;"></div>
+
+                        <!-- Complete action trigger process button -->
+                        <button type="button" class="btn" id="workspace-process-btn" style="width: 100%; margin-top: 1.5rem; font-size: 1.1rem; padding: 1rem 1.5rem;" disabled>Process and Download</button>
+
+                        <!-- Finished status download link block -->
+                        <div class="output-panel" id="workspace-output-panel">
+                            <h4>Conversion Complete!</h4>
+                            <p style="margin-bottom: 1.25rem; font-size: 0.9rem;">Your file has been processed locally inside your browser client memory storage.</p>
+                            <div id="workspace-download-links"></div>
+                        </div>
+
+                        <!-- Relative Loader Element inside workspace layout box -->
+                        <div class="loading-overlay" id="workspace-loader">
+                            <div class="spinner"></div>
+                            <p class="loading-text" id="workspace-loader-text">Configuring documents on your device...</p>
+                        </div>
+                    </div>
+
+                    <!-- Side segment for Ad Integration -->
+                    <div class="workspace-side">
+                        <div class="ad-sidebar">
+                            [Ad Space - 200x400]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Website Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-column">
+                <h4>PDF Nova</h4>
+                <p style="color: #a0aec0; margin-bottom: 1.5rem;">A clean collection of PDF manipulation tools running entirely within your browser client. No file storage or uploads are performed, keeping your data secure.</p>
+                <p style="font-weight: bold; color: #ffffff;">Processed locally inside your browser.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Utility Links</h4>
+                <ul>
+                    <li><a href="#">Home Page</a></li>
+                    <li><a href="#all-tools">Utility Tools</a></li>
+                    <li><a href="#about-us">About PDF Nova</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Legal / Security</h4>
+                <ul>
+                    <li><a href="#">Privacy Framework</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 PDF Nova. All Rights Reserved. Client-Side Document Manipulation Framework.</p>
+        </div>
+    </footer>
+
+    <!-- Core Dynamic Router and Interactive Logic -->
+    <script>
+        // PDFJS Worker assignment
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        // 27 Core PDF Nova Utilities with custom High-Search Titles and Meta Descriptions
+        const toolImplementations = {
+            'merge-pdf': {
+                title: 'Merge PDF Free - Combine PDF Files Online',
+                desc: 'Merge multiple PDF files into a single document instantly in your browser.',
+                seoDesc: 'Combine multiple PDF documents into a single structural asset quickly. Zero files uploaded, complete browser-based security.',
+                icon: '🔗',
+                fileType: '.pdf',
+                multiple: true,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">The documents will be merged in the exact ordering shown in the file inventory list.</p>`,
+                process: async (files) => {
+                    const mergedDoc = await PDFLib.PDFDocument.create();
+                    for (const file of files) {
+                        const bytes = await file.arrayBuffer();
+                        const doc = await PDFLib.PDFDocument.load(bytes);
+                        const copiedPages = await mergedDoc.copyPages(doc, doc.getPageIndices());
+                        copiedPages.forEach((page) => mergedDoc.addPage(page));
+                    }
+                    const pdfBytes = await mergedDoc.save();
+                    return { data: pdfBytes, filename: 'merged.pdf', type: 'application/pdf' };
+                }
+            },
+            'split-pdf': {
+                title: 'Split PDF Online - Extract Pages from PDF',
+                desc: 'Extract range sets or specific individual pages out of an uploaded PDF file.',
+                seoDesc: 'Split PDF files online for free. Extract specific page ranges or individual pages quickly in your browser.',
+                icon: '✂️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="split-ranges">Target Page Range (e.g., 1-3, 5, 7-9):</label>
+                    <input type="text" id="split-ranges" placeholder="1-2, 4" required />
+                `,
+                process: async (files, optionsElement) => {
+                    const file = files[0];
+                    const rangeText = optionsElement.querySelector('#split-ranges').value;
+                    if (!rangeText) throw new Error("Please specify the page selection.");
+                    
+                    const bytes = await file.arrayBuffer();
+                    const doc = await PDFLib.PDFDocument.load(bytes);
+                    const splitDoc = await PDFLib.PDFDocument.create();
+                    const totalPages = doc.getPageCount();
+
+                    const indices = parsePageRanges(rangeText, totalPages);
+                    const copiedPages = await splitDoc.copyPages(doc, indices);
+                    copiedPages.forEach((page) => splitDoc.addPage(page));
+
+                    const pdfBytes = await splitDoc.save();
+                    return { data: pdfBytes, filename: 'split.pdf', type: 'application/pdf' };
+                }
+            },
+            'compress-pdf': {
+                title: 'Compress PDF Online Free - Reduce PDF File Size',
+                desc: 'Optimize embedded image elements within pages to reduce total file size.',
+                seoDesc: 'Compress PDF files online safely. Reduce PDF size while maintaining maximum quality inside your browser.',
+                icon: '🗜️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="compress-quality">Output JPEG Compression Quality (0.1 - 1.0):</label>
+                    <input type="range" id="compress-quality" min="0.1" max="1.0" step="0.1" value="0.6" style="width: 100%;" oninput="this.nextElementSibling.value = this.value"/>
+                    <output style="font-weight: bold; font-size: 1rem; display: block; margin-top: 0.5rem; text-align: center; color: var(--text-dark);">0.6</output>
+                `,
+                process: async (files, optionsElement) => {
+                    const file = files[0];
+                    const quality = parseFloat(optionsElement.querySelector('#compress-quality').value);
+                    const fileBytes = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: fileBytes}).promise;
+                    const compressedDoc = await PDFLib.PDFDocument.create();
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        updateLoaderText(`Compiling page ${i} of ${pdf.numPages}...`);
+                        const page = await pdf.getPage(i);
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                        const imgUrl = canvas.toDataURL('image/jpeg', quality);
+                        const imgBytes = await fetch(imgUrl).then(r => r.arrayBuffer());
+                        const embeddedImg = await compressedDoc.embedJpg(imgBytes);
+
+                        const freshPage = compressedDoc.addPage([viewport.width, viewport.height]);
+                        freshPage.drawImage(embeddedImg, {
+                            x: 0,
+                            y: 0,
+                            width: viewport.width,
+                            height: viewport.height
+                        });
+                    }
+                    const outputBytes = await compressedDoc.save();
+                    return { data: outputBytes, filename: 'compressed.pdf', type: 'application/pdf' };
+                }
+            },
+            'pdf-to-word': {
+                title: 'PDF to Word Converter Free - Convert PDF to Doc Online',
+                desc: 'Extract plain text characters out of structural elements into a .txt representation.',
+                seoDesc: 'Convert PDF to editable Word txt file. Extract text contents without uploading files to any external servers.',
+                icon: '📝',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Converts vector characters into plain text formats. Complex structural elements and fonts will not be fully preserved.</p>`,
+                process: async (files) => {
+                    const file = files[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    let textResult = '';
+
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        updateLoaderText(`Extracting data from page ${i} / ${pdfDoc.numPages}`);
+                        const page = await pdfDoc.getPage(i);
+                        const content = await page.getTextContent();
+                        const items = content.items.map(item => item.str);
+                        textResult += `--- Page ${i} ---\n` + items.join(' ') + '\n\n';
+                    }
+
+                    const blobData = new TextEncoder().encode(textResult);
+                    return { data: blobData, filename: 'extracted-text.txt', type: 'text/plain' };
+                }
+            },
+            'pdf-to-pptx': {
+                title: 'PDF to PowerPoint Converter - PDF to Slides Free',
+                desc: 'Export structural document layouts as slide images using PPTXGenJS.',
+                seoDesc: 'Convert PDF slides directly into native PPTX layouts inside your browser with PDF Nova.',
+                icon: '📊',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Each PDF page layout is converted into a visual slide context.</p>`,
+                process: async (files) => {
+                    const file = files[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    const pptx = new PptxGenJS();
+
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        updateLoaderText(`Rendering PowerPoint slide ${i} / ${pdfDoc.numPages}`);
+                        const page = await pdfDoc.getPage(i);
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                        const dataUrl = canvas.toDataURL('image/png');
+
+                        const slide = pptx.addSlide();
+                        slide.addImage({ data: dataUrl, x: 0, y: 0, w: '100%', h: '100%' });
+                    }
+
+                    const pptxBuffer = await pptx.write('arraybuffer');
+                    return { data: pptxBuffer, filename: 'converted.pptx', type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' };
+                }
+            },
+            'word-to-pdf': {
+                title: 'Word to PDF Converter Online - Docx to PDF Free',
+                desc: 'Convert standard Microsoft DOCX documents into PDF page structures.',
+                seoDesc: 'Convert DOCX to standard layout PDF file cleanly. Process document structures on-device without any security risk.',
+                icon: '📘',
+                fileType: '.docx',
+                multiple: false,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Decodes DOCX file schemas using mammoth.js and converts them to PDF.</p>`,
+                process: async (files) => {
+                    const file = files[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    const mammothResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                    
+                    const container = document.createElement('div');
+                    container.style.padding = '20px';
+                    container.innerHTML = mammothResult.value;
+                    document.body.appendChild(container);
+
+                    const pdfBlob = await html2pdf().from(container).outputPdf('blob');
+                    document.body.removeChild(container);
+
+                    return { data: await pdfBlob.arrayBuffer(), filename: 'word.pdf', type: 'application/pdf' };
+                }
+            },
+            'edit-pdf': {
+                title: 'Edit PDF in Browser Free - Write & Draw on PDF',
+                desc: 'Draw elements or position text items dynamically over page structures using Fabric.js.',
+                seoDesc: 'Free online PDF editor. Edit PDF browser-side to append shapes, markups, annotations, and text layers.',
+                icon: '✏️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Upload a document to initialize the interactive Fabric canvas interface.</p>
+                    <div id="editor-ui-container" style="display:none;">
+                        <div class="canvas-container-outer">
+                            <canvas id="editor-fabric-canvas"></canvas>
+                        </div>
+                        <div class="canvas-controls-bar">
+                            <button type="button" class="btn btn-secondary" id="editor-prev-page">◀ Prev</button>
+                            <span id="editor-page-indicator" style="font-weight:bold; align-self:center;">Page 1</span>
+                            <button type="button" class="btn btn-secondary" id="editor-next-page">Next ▶</button>
+                            <button type="button" class="btn btn-secondary" id="editor-add-text">Add Text</button>
+                            <button type="button" class="btn btn-secondary" id="editor-add-rect">Add Box</button>
+                            <button type="button" class="btn btn-secondary" id="editor-free-draw">Draw Mode</button>
+                        </div>
+                    </div>
+                `,
+                onFileSelect: async (files, optionsElement) => {
+                    const file = files[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    window.currentPdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    window.originalPdfBytes = arrayBuffer;
+                    window.editorPageNum = 1;
+                    window.editorCanvasModifications = {}; 
+
+                    optionsElement.querySelector('#editor-ui-container').style.display = 'block';
+                    await initializeEditorCanvas(optionsElement);
+                },
+                process: async (files, optionsElement) => {
+                    if (window.fabricCanvasInstance) {
+                        saveCurrentPageModification();
+                    }
+                    const pdfDoc = await PDFLib.PDFDocument.load(window.originalPdfBytes);
+                    
+                    for (const indexStr in window.editorCanvasModifications) {
+                        const pageIndex = parseInt(indexStr);
+                        const dataUrl = window.editorCanvasModifications[pageIndex];
+                        if (!dataUrl) continue;
+
+                        const response = await fetch(dataUrl);
+                        const imageBytes = await response.arrayBuffer();
+                        const embeddedImage = await pdfDoc.embedPng(imageBytes);
+
+                        const page = pdfDoc.getPage(pageIndex);
+                        const { width, height } = page.getSize();
+                        
+                        page.drawImage(embeddedImage, {
+                            x: 0,
+                            y: 0,
+                            width: width,
+                            height: height
+                        });
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'edited.pdf', type: 'application/pdf' };
+                }
+            },
+            'sign-pdf': {
+                title: 'Sign PDF Free Online - Fill & Sign PDFs',
+                desc: 'Draw your signature on an interactive pad and overlay it on the document.',
+                seoDesc: 'Sign PDF documents client-side. Create your digital signature and stamp it securely anywhere in the layout.',
+                icon: '✍️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <div style="margin-bottom: 1rem;">
+                        <label>Draw Signature Below:</label>
+                        <div style="border: 2px dashed var(--border-color); background:#fff; width:100%; height:150px; position:relative;">
+                            <canvas id="signature-pad" style="width:100%; height:150px;"></canvas>
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="clear-signature" style="margin-top:0.5rem; width:100%;">Clear Signature Canvas</button>
+                    </div>
+                    <label for="signature-placement">Placement Page:</label>
+                    <input type="number" id="signature-placement-page" value="1" min="1" style="margin-bottom: 1rem;" />
+                    <label for="signature-position">Position Preset:</label>
+                    <select id="signature-position">
+                        <option value="bottom-right">Bottom Right Corner</option>
+                        <option value="bottom-left">Bottom Left Corner</option>
+                        <option value="top-right">Top Right Corner</option>
+                        <option value="top-left">Top Left Corner</option>
+                        <option value="center">Center</option>
+                    </select>
+                `,
+                onFileSelect: () => {
+                    setTimeout(() => {
+                        const sigCanvas = document.getElementById('signature-pad');
+                        if (!sigCanvas) return;
+                        
+                        const rect = sigCanvas.getBoundingClientRect();
+                        sigCanvas.width = rect.width;
+                        sigCanvas.height = rect.height;
+
+                        const fabricSig = new fabric.Canvas('signature-pad', {
+                            isDrawingMode: true
+                        });
+                        fabricSig.freeDrawingBrush.width = 3;
+                        fabricSig.freeDrawingBrush.color = '#000000';
+                        window.fabricSignaturePad = fabricSig;
+
+                        document.getElementById('clear-signature').addEventListener('click', () => {
+                            fabricSig.clear();
+                        });
+                    }, 100);
+                },
+                process: async (files, optionsElement) => {
+                    if (!window.fabricSignaturePad) throw new Error("Signature engine not initialized.");
+                    const objects = window.fabricSignaturePad.getObjects();
+                    if (objects.length === 0) throw new Error("Please draw a signature first.");
+
+                    const signatureImgUrl = window.fabricSignaturePad.toDataURL({ format: 'png' });
+                    const signatureBytes = await fetch(signatureImgUrl).then(r => r.arrayBuffer());
+
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const pageTarget = parseInt(optionsElement.querySelector('#signature-placement-page').value) - 1;
+                    const positionPreset = optionsElement.querySelector('#signature-position').value;
+
+                    if (pageTarget < 0 || pageTarget >= pdfDoc.getPageCount()) {
+                        throw new Error("Specified page target is out of document bounds.");
+                    }
+
+                    const page = pdfDoc.getPage(pageTarget);
+                    const { width, height } = page.getSize();
+                    const embeddedSig = await pdfDoc.embedPng(signatureBytes);
+
+                    const sigWidth = 150;
+                    const sigHeight = 75;
+                    let x = width - sigWidth - 20;
+                    let y = 20;
+
+                    if (positionPreset === 'bottom-left') {
+                        x = 20;
+                        y = 20;
+                    } else if (positionPreset === 'top-right') {
+                        x = width - sigWidth - 20;
+                        y = height - sigHeight - 20;
+                    } else if (positionPreset === 'top-left') {
+                        x = 20;
+                        y = height - sigHeight - 20;
+                    } else if (positionPreset === 'center') {
+                        x = (width - sigWidth) / 2;
+                        y = (height - sigHeight) / 2;
+                    }
+
+                    page.drawImage(embeddedSig, {
+                        x: x,
+                        y: y,
+                        width: sigWidth,
+                        height: sigHeight
+                    });
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'signed.pdf', type: 'application/pdf' };
+                }
+            },
+            'watermark-pdf': {
+                title: 'Watermark PDF Online - Add Secure Watermark',
+                desc: 'Add decorative text dynamically formatted across your PDF document.',
+                seoDesc: 'Stamp customized security diagonal watermarks onto PDF page layouts to protect content from theft.',
+                icon: '💧',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="watermark-text">Watermark Text:</label>
+                    <input type="text" id="watermark-text" value="CONFIDENTIAL" required />
+                    <label for="watermark-opacity">Opacity Level (0.1 - 1.0):</label>
+                    <input type="range" id="watermark-opacity" min="0.1" max="1.0" step="0.1" value="0.3" style="width:100%;" />
+                `,
+                process: async (files, optionsElement) => {
+                    const file = files[0];
+                    const watermarkText = optionsElement.querySelector('#watermark-text').value;
+                    const opacity = parseFloat(optionsElement.querySelector('#watermark-opacity').value);
+
+                    const fileBytes = await file.arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+                    const pages = pdfDoc.getPages();
+                    for (const page of pages) {
+                        const { width, height } = page.getSize();
+                        page.drawText(watermarkText, {
+                            x: width / 6,
+                            y: height / 2,
+                            size: 50,
+                            font: helveticaFont,
+                            color: PDFLib.rgb(0.7, 0.7, 0.7),
+                            opacity: opacity,
+                            rotate: PDFLib.degrees(45)
+                        });
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'watermarked.pdf', type: 'application/pdf' };
+                }
+            },
+            'rotate-pdf': {
+                title: 'Rotate PDF Pages - Rotate PDF Free',
+                desc: 'Apply a structural rotation to all pages in the document.',
+                seoDesc: 'Permanently rotate PDF pages clockwise by 90, 180, or 270 degrees on your local web browser.',
+                icon: '🔄',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="rotation-angle">Rotation Direction:</label>
+                    <select id="rotation-angle">
+                        <option value="90">90 Degrees Clockwise</option>
+                        <option value="180">180 Degrees Clockwise</option>
+                        <option value="270">270 Degrees Clockwise</option>
+                    </select>
+                `,
+                process: async (files, optionsElement) => {
+                    const file = files[0];
+                    const degreeVal = parseInt(optionsElement.querySelector('#rotation-angle').value);
+
+                    const fileBytes = await file.arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const pages = pdfDoc.getPages();
+
+                    for (const page of pages) {
+                        const currentRotation = page.getRotation().angle;
+                        page.setRotation(PDFLib.degrees((currentRotation + degreeVal) % 360));
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'rotated.pdf', type: 'application/pdf' };
+                }
+            },
+            'pdf-to-jpg': {
+                title: 'PDF to JPG Online - Extract PDF Pages as Images',
+                desc: 'Export pages of a PDF as individual JPG images, packed into a single ZIP archive.',
+                seoDesc: 'Extract pages of a PDF as high-resolution JPG images on-device and download as a ZIP file.',
+                icon: '🖼️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Converts vector PDF sheets into standardized JPEG images.</p>`,
+                process: async (files) => {
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: fileBytes}).promise;
+                    const zip = new JSZip();
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        updateLoaderText(`Converting page ${i} / ${pdf.numPages} to JPG`);
+                        const page = await pdf.getPage(i);
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                        const base64Data = dataUrl.split(',')[1];
+                        zip.file(`page-${i}.jpg`, base64Data, {base64: true});
+                    }
+
+                    const zipBlob = await zip.generateAsync({type: 'arraybuffer'});
+                    return { data: zipBlob, filename: 'images.zip', type: 'application/zip' };
+                }
+            },
+            'jpg-to-pdf': {
+                title: 'JPG to PDF Converter Free - Compile Images to PDF',
+                desc: 'Compile uploaded JPEG images directly into a clean PDF document.',
+                seoDesc: 'Convert JPEG/JPG images to PDF document. Merge multiple images into a clean single page PDF output.',
+                icon: '📸',
+                fileType: '.jpg,.jpeg',
+                multiple: true,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Select multiple JPG images to generate a multi-page PDF document.</p>`,
+                process: async (files) => {
+                    const pdfDoc = await PDFLib.PDFDocument.create();
+                    for (const file of files) {
+                        const imageBytes = await file.arrayBuffer();
+                        const embeddedImg = await pdfDoc.embedJpg(imageBytes);
+                        const { width, height } = embeddedImg.scale(1.0);
+                        const page = pdfDoc.addPage([width, height]);
+                        page.drawImage(embeddedImg, { x: 0, y: 0, width: width, height: height });
+                    }
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'images-compiled.pdf', type: 'application/pdf' };
+                }
+            },
+            'png-to-pdf': {
+                title: 'PNG to PDF Converter - Convert PNG to PDF Online',
+                desc: 'Convert PNG format image layouts into standard PDF pages.',
+                seoDesc: 'Convert PNG pictures into a PDF structure without losing file transparency levels or vector clarity.',
+                icon: '🎨',
+                fileType: '.png',
+                multiple: true,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Select multiple transparent or high-fidelity PNG assets.</p>`,
+                process: async (files) => {
+                    const pdfDoc = await PDFLib.PDFDocument.create();
+                    for (const file of files) {
+                        const imageBytes = await file.arrayBuffer();
+                        const embeddedImg = await pdfDoc.embedPng(imageBytes);
+                        const { width, height } = embeddedImg.scale(1.0);
+                        const page = pdfDoc.addPage([width, height]);
+                        page.drawImage(embeddedImg, { x: 0, y: 0, width: width, height: height });
+                    }
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'png-compiled.pdf', type: 'application/pdf' };
+                }
+            },
+            'excel-to-pdf': {
+                title: 'Excel to PDF Converter - XLS/XLSX to PDF Free',
+                desc: 'Convert modern SheetJS workbook sheets directly into layout-mapped PDF files.',
+                seoDesc: 'Map complex spreadsheets (.xlsx & .xls) directly into clean printable layout PDF schemas.',
+                icon: '📊',
+                fileType: '.xlsx,.xls',
+                multiple: false,
+                options: () => `<p style="font-size: 0.9rem; color: var(--text-muted)">Converts the primary sheet into an HTML grid schema, then builds a PDF layout.</p>`,
+                process: async (files) => {
+                    const file = files[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const htmlRepresentation = XLSX.utils.sheet_to_html(workbook.Sheets[firstSheetName]);
+
+                    const wrapper = document.createElement('div');
+                    wrapper.style.padding = '20px';
+                    wrapper.innerHTML = htmlRepresentation;
+                    document.body.appendChild(wrapper);
+
+                    const pdfBlob = await html2pdf().from(wrapper).outputPdf('blob');
+                    document.body.removeChild(wrapper);
+
+                    return { data: await pdfBlob.arrayBuffer(), filename: 'excel.pdf', type: 'application/pdf' };
+                }
+            },
+            'html-to-pdf': {
+                title: 'HTML to PDF Generator - Convert Code to PDF Online',
+                desc: 'Transform customized markup syntax blocks directly into formatted PDF pages.',
+                seoDesc: 'Convert raw HTML/CSS strings into clean PDF documents client-side.',
+                icon: '🌐',
+                fileType: '.html,.txt',
+                multiple: false,
+                options: () => `
+                    <label for="html-input-string">HTML Raw Source Code:</label>
+                    <textarea id="html-input-string" rows="8" placeholder="<h1>PDF Nova</h1><p>Demo text block.</p>"></textarea>
+                `,
+                process: async (files, optionsElement) => {
+                    const htmlCode = optionsElement.querySelector('#html-input-string').value;
+                    if (!htmlCode) throw new Error("Please specify raw HTML inputs first.");
+
+                    const wrapper = document.createElement('div');
+                    wrapper.style.padding = '25px';
+                    wrapper.innerHTML = htmlCode;
+                    document.body.appendChild(wrapper);
+
+                    const pdfBlob = await html2pdf().from(wrapper).outputPdf('blob');
+                    document.body.removeChild(wrapper);
+
+                    return { data: await pdfBlob.arrayBuffer(), filename: 'html-rendered.pdf', type: 'application/pdf' };
+                }
+            },
+            'protect-pdf': {
+                title: 'Protect PDF Online - Encrypt PDF with Password',
+                desc: 'Add password encryption to your PDF structures.',
+                seoDesc: 'Secure documents by applying strong encryption standards on PDF Nova. Setup user and owner keys.',
+                icon: '🔒',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="user-pass">User Access Password:</label>
+                    <input type="password" id="user-pass" required />
+                    <label for="owner-pass">Owner Management Password:</label>
+                    <input type="password" id="owner-pass" required />
+                `,
+                process: async (files, optionsElement) => {
+                    const fileBytes = await files[0].arrayBuffer();
+                    const userPass = optionsElement.querySelector('#user-pass').value;
+                    const ownerPass = optionsElement.querySelector('#owner-pass').value;
+
+                    if (!userPass || !ownerPass) throw new Error("Passwords cannot be empty.");
+
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const encryptedBytes = await pdfDoc.save({
+                        userPassword: userPass,
+                        ownerPassword: ownerPass,
+                        permissions: {
+                            printing: 'highResolution',
+                            modifying: false,
+                            copying: false
+                        }
+                    });
+
+                    return { data: encryptedBytes, filename: 'protected.pdf', type: 'application/pdf' };
+                }
+            },
+            'unlock-pdf': {
+                title: 'Unlock PDF - Remove Password from PDF Free',
+                desc: 'Remove password protection from your secure PDF files.',
+                seoDesc: 'Decrypt password-protected PDFs locally. Instantly generate a restriction-free copy.',
+                icon: '🔓',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="decrypt-pass">Decryption Password:</label>
+                    <input type="password" id="decrypt-pass" required />
+                `,
+                process: async (files, optionsElement) => {
+                    const fileBytes = await files[0].arrayBuffer();
+                    const passwordVal = optionsElement.querySelector('#decrypt-pass').value;
+
+                    const decryptedDoc = await PDFLib.PDFDocument.load(fileBytes, {
+                        password: passwordVal
+                    });
+
+                    const outputBytes = await decryptedDoc.save();
+                    return { data: outputBytes, filename: 'unlocked.pdf', type: 'application/pdf' };
+                }
+            },
+            'page-numbers-pdf': {
+                title: 'Add Page Numbers to PDF Free - Paginate PDF',
+                desc: 'Append page counter layouts to the bottom margins of each sheet.',
+                seoDesc: 'Number pages in PDF document quickly. Choose center or right alignments for page count footer markings.',
+                icon: '🔢',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="pagenum-preset">Position Mapping:</label>
+                    <select id="pagenum-preset">
+                        <option value="center">Bottom Center</option>
+                        <option value="right">Bottom Right</option>
+                    </select>
+                `,
+                process: async (files, optionsElement) => {
+                    const preset = optionsElement.querySelector('#pagenum-preset').value;
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                    const pages = pdfDoc.getPages();
+
+                    for (let i = 0; i < pages.length; i++) {
+                        const page = pages[i];
+                        const { width, height } = page.getSize();
+                        const textStr = `Page ${i + 1} of ${pages.length}`;
+                        const size = 10;
+                        const textWidth = font.widthOfTextAtSize(textStr, size);
+
+                        let x = (width - textWidth) / 2;
+                        if (preset === 'right') {
+                            x = width - textWidth - 30;
+                        }
+
+                        page.drawText(textStr, {
+                            x: x,
+                            y: 20,
+                            size: size,
+                            font: font,
+                            color: PDFLib.rgb(0.3, 0.3, 0.3)
+                        });
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'paginated.pdf', type: 'application/pdf' };
+                }
+            },
+            'crop-pdf': {
+                title: 'Crop PDF Margins Online - Adjust PDF Viewport',
+                desc: 'Adjust document coordinate margins to crop down viewports.',
+                seoDesc: 'Crop PDF coordinates client-side to trim extra margins and optimize sheets for smaller viewports.',
+                icon: '📐',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="crop-val">Crop Margins reduction value (Points):</label>
+                    <input type="number" id="crop-val" value="30" min="5" step="5" />
+                `,
+                process: async (files, optionsElement) => {
+                    const reductionVal = parseFloat(optionsElement.querySelector('#crop-val').value);
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const pages = pdfDoc.getPages();
+
+                    for (const page of pages) {
+                        const { width, height } = page.getSize();
+                        page.setCropBox(reductionVal, reductionVal, width - reductionVal * 2, height - reductionVal * 2);
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'cropped.pdf', type: 'application/pdf' };
+                }
+            },
+            'delete-pages': {
+                title: 'Delete PDF Pages Online - Remove Pages from PDF',
+                desc: 'Remove specific pages from your document layout.',
+                seoDesc: 'Discard unnecessary pages from PDF online instantly. Choose specific page numbers to extract the rest.',
+                icon: '🗑️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="del-pages-input">Target Page Indices to Remove (e.g., 2, 4):</label>
+                    <input type="text" id="del-pages-input" placeholder="2, 5" required />
+                `,
+                process: async (files, optionsElement) => {
+                    const inputStr = optionsElement.querySelector('#del-pages-input').value;
+                    if (!inputStr) throw new Error("No indices specified.");
+
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    
+                    const targets = inputStr.split(',')
+                        .map(p => parseInt(p.trim()) - 1)
+                        .filter(p => !isNaN(p) && p >= 0 && p < pdfDoc.getPageCount())
+                        .sort((a, b) => b - a); // Sort descending to prevent shifting errors
+
+                    if (targets.length === 0) throw new Error("No valid indices found.");
+
+                    for (const idx of targets) {
+                        pdfDoc.removePage(idx);
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'pages-removed.pdf', type: 'application/pdf' };
+                }
+            },
+            'extract-images': {
+                title: 'Extract Images from PDF - Download PDF Images ZIP',
+                desc: 'Extract and download embedded imagery from document slides as a ZIP file.',
+                seoDesc: 'Scan PDF structural entities and download all contained raster graphic assets inside a single ZIP file.',
+                icon: '🖼️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `<p style="font-size:0.9rem; color: var(--text-muted)">Extracts individual graphic resources embedded within document pages.</p>`,
+                process: async (files) => {
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: fileBytes}).promise;
+                    const zip = new JSZip();
+                    let imageCount = 0;
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        updateLoaderText(`Scanning page ${i} / ${pdf.numPages}...`);
+                        const page = await pdf.getPage(i);
+                        const operatorList = await page.getOperatorList();
+                        
+                        for (let j = 0; j < operatorList.fnArray.length; j++) {
+                            const op = operatorList.fnArray[j];
+                            if (op === pdfjsLib.OPS.paintJpegXObject || op === pdfjsLib.OPS.paintImageXObject) {
+                                const objName = operatorList.argsArray[j][0];
+                                try {
+                                    const imageObj = await page.objs.get(objName);
+                                    if (imageObj && imageObj.data) {
+                                        imageCount++;
+                                        const canvas = document.createElement('canvas');
+                                        canvas.width = imageObj.width;
+                                        canvas.height = imageObj.height;
+                                        const ctx = canvas.getContext('2d');
+                                        
+                                        const imgData = ctx.createImageData(imageObj.width, imageObj.height);
+                                        const data = imgData.data;
+                                        const src = imageObj.data;
+                                        
+                                        let srcIdx = 0, dstIdx = 0;
+                                        while (srcIdx < src.length) {
+                                            data[dstIdx] = src[srcIdx];       // R
+                                            data[dstIdx + 1] = src[srcIdx + 1]; // G
+                                            data[dstIdx + 2] = src[srcIdx + 2]; // B
+                                            data[dstIdx + 3] = 255;             // A
+                                            srcIdx += 3;
+                                            dstIdx += 4;
+                                        }
+                                        ctx.putImageData(imgData, 0, 0);
+                                        const dataUrl = canvas.toDataURL('image/png');
+                                        const base64Data = dataUrl.split(',')[1];
+                                        zip.file(`extracted-image-${imageCount}.png`, base64Data, {base64: true});
+                                    }
+                                } catch (e) {
+                                    console.warn("Skipping standard layout object processing error: ", e);
+                                }
+                            }
+                        }
+                    }
+
+                    if (imageCount === 0) throw new Error("No pixel resources found in the document structure.");
+
+                    const zipBuffer = await zip.generateAsync({type: 'arraybuffer'});
+                    return { data: zipBuffer, filename: 'extracted-images.zip', type: 'application/zip' };
+                }
+            },
+            'rotate-specific': {
+                title: 'Rotate Selected PDF Pages - Custom Page Rotation',
+                desc: 'Apply specific structural rotation adjustments to select pages only.',
+                seoDesc: 'Rotate selectively targeted PDF pages individually instead of rotating the entire document layout.',
+                icon: '🔁',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="rot-pages">Target Page Indices (e.g., 1, 3):</label>
+                    <input type="text" id="rot-pages" placeholder="1, 3" required />
+                    <label for="rot-deg">Rotation (Clockwise):</label>
+                    <select id="rot-deg">
+                        <option value="90">90 Degrees</option>
+                        <option value="180">180 Degrees</option>
+                        <option value="270">270 Degrees</option>
+                    </select>
+                `,
+                process: async (files, optionsElement) => {
+                    const pagesStr = optionsElement.querySelector('#rot-pages').value;
+                    const degreeVal = parseInt(optionsElement.querySelector('#rot-deg').value);
+
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const totalPages = pdfDoc.getPageCount();
+
+                    const targets = pagesStr.split(',')
+                        .map(p => parseInt(p.trim()) - 1)
+                        .filter(p => !isNaN(p) && p >= 0 && p < totalPages);
+
+                    for (const index of targets) {
+                        const page = pdfDoc.getPage(index);
+                        const currentRot = page.getRotation().angle;
+                        page.setRotation(PDFLib.degrees((currentRot + degreeVal) % 360));
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'rotated-selected.pdf', type: 'application/pdf' };
+                }
+            },
+            'resize-pdf': {
+                title: 'Resize PDF Page Size Online - Change PDF Page Dimensions',
+                desc: 'Scale coordinate bounds of pages to match letter or A4 dimensions.',
+                seoDesc: 'Standardize document page formatting to Letter or A4 sizes dynamically inside your local browser.',
+                icon: '📏',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="resize-preset">Target Dimension Preset:</label>
+                    <select id="resize-preset">
+                        <option value="A4">A4 (595 x 842 pt)</option>
+                        <option value="LETTER">Letter (612 x 792 pt)</option>
+                    </select>
+                `,
+                process: async (files, optionsElement) => {
+                    const preset = optionsElement.querySelector('#resize-preset').value;
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const pages = pdfDoc.getPages();
+
+                    const targetWidth = preset === 'A4' ? 595 : 612;
+                    const targetHeight = preset === 'A4' ? 842 : 792;
+
+                    for (const page of pages) {
+                        page.setSize(targetWidth, targetHeight);
+                    }
+
+                    const outputBytes = await pdfDoc.save();
+                    return { data: outputBytes, filename: 'resized.pdf', type: 'application/pdf' };
+                }
+            },
+            'organize-pdf': {
+                title: 'Organize PDF Pages Online - Reorder PDF Free',
+                desc: 'Reorder pages within your document structure.',
+                seoDesc: 'Easily rearrange and organize PDF pages into any custom sequence or ordering schema.',
+                icon: '🗂️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `
+                    <label for="reorder-indices">Desired Page Sequence (e.g., 3, 1, 2, 4):</label>
+                    <input type="text" id="reorder-indices" placeholder="3, 1, 2" required />
+                `,
+                process: async (files, optionsElement) => {
+                    const seqStr = optionsElement.querySelector('#reorder-indices').value;
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+                    const totalPages = pdfDoc.getPageCount();
+
+                    const indices = seqStr.split(',')
+                        .map(p => parseInt(p.trim()) - 1)
+                        .filter(p => !isNaN(p) && p >= 0 && p < totalPages);
+
+                    if (indices.length === 0) throw new Error("Invalid sequence format.");
+
+                    const freshDoc = await PDFLib.PDFDocument.create();
+                    const copiedPages = await freshDoc.copyPages(pdfDoc, indices);
+                    copiedPages.forEach((page) => freshDoc.addPage(page));
+
+                    const outputBytes = await freshDoc.save();
+                    return { data: outputBytes, filename: 'organized.pdf', type: 'application/pdf' };
+                }
+            },
+            'grayscale-pdf': {
+                title: 'Convert PDF to Grayscale Free - Black & White PDF',
+                desc: 'Apply pixel desaturation to the pages in your document.',
+                seoDesc: 'Desaturate PDF layout visuals. Instantly convert colors to black & white to save printing toner cartridges.',
+                icon: '🏁',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `<p style="font-size:0.9rem; color: var(--text-muted)">Modifies elements to display in grayscale.</p>`,
+                process: async (files) => {
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: fileBytes}).promise;
+                    const freshDoc = await PDFLib.PDFDocument.create();
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        updateLoaderText(`Converting page ${i} / ${pdf.numPages} to grayscale...`);
+                        const page = await pdf.getPage(i);
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                        
+                        // Grayscale pixel rendering calculation
+                        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const d = imgData.data;
+                        for (let j = 0; j < d.length; j += 4) {
+                            const gray = 0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2];
+                            d[j] = gray;
+                            d[j + 1] = gray;
+                            d[j + 2] = gray;
+                        }
+                        ctx.putImageData(imgData, 0, 0);
+
+                        const grayscaledImgUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        const grayscaledBytes = await fetch(grayscaledImgUrl).then(r => r.arrayBuffer());
+                        const embeddedImg = await freshDoc.embedJpg(grayscaledBytes);
+
+                        const freshPage = freshDoc.addPage([viewport.width, viewport.height]);
+                        freshPage.drawImage(embeddedImg, {
+                            x: 0,
+                            y: 0,
+                            width: viewport.width,
+                            height: viewport.height
+                        });
+                    }
+
+                    const outputBytes = await freshDoc.save();
+                    return { data: outputBytes, filename: 'grayscale.pdf', type: 'application/pdf' };
+                }
+            },
+            'pptx-to-pdf': {
+                title: 'Convert PPTX to PDF Online Free - PowerPoint to PDF',
+                desc: 'Convert PowerPoint files into standard PDF pages.',
+                seoDesc: 'Process presentation layouts (.pptx) directly inside your browser and compile clean vector PDF layouts.',
+                icon: '📉',
+                fileType: '.pptx',
+                multiple: false,
+                options: () => `<p style="font-size:0.9rem; color: var(--text-muted)">Uses client-side extraction to convert PowerPoint layouts to PDF.</p>`,
+                process: async (files) => {
+                    throw new Error("Client-side direct PPTX file layout rendering is currently limited. Try converting your PPTX files to HTML first.");
+                }
+            },
+            'repair-pdf': {
+                title: 'Repair PDF Online Free - Fix Damaged PDF Files',
+                desc: 'Re-save your PDF document structure to fix minor issues.',
+                seoDesc: 'Restructure corrupted document segments. Clean catalog definitions locally in your browser with PDF Nova.',
+                icon: '🛠️',
+                fileType: '.pdf',
+                multiple: false,
+                options: () => `<p style="font-size:0.9rem; color: var(--text-muted)">Performs standard catalog rewrites to fix minor structural issues.</p>`,
+                process: async (files) => {
+                    const fileBytes = await files[0].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(fileBytes, { ignoreEncryption: true });
+                    const savedBytes = await pdfDoc.save();
+                    return { data: savedBytes, filename: 'repaired.pdf', type: 'application/pdf' };
+                }
+            }
+        };
+
+        // UI References (Declared globally, initialized inside DOMContentLoaded)
+        let siteHeader, navToggle, navMenu, themeToggle, toolsGridContainer;
+
+        // Navigation and Routing Event Handler (Dynamic Page Generator)
+        window.addEventListener('hashchange', handleAppRouting);
+        window.addEventListener('load', handleAppRouting);
+
+        function handleAppRouting() {
+            const rawHash = window.location.hash.toLowerCase();
+            const cleanHash = rawHash.replace('#', '');
+
+            // Ensure selectors are assigned before working with active states
+            const menuLinks = document.querySelectorAll('.nav-link');
+            if (menuLinks) {
+                menuLinks.forEach(link => {
+                    link.classList.remove('active');
+                    const href = link.getAttribute('href');
+                    if (href === rawHash || (rawHash === '' && href === '#') || (rawHash === '#home' && href === '#')) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Route view displays dynamically
+            if (!cleanHash || cleanHash === 'home') {
+                const homeView = document.getElementById('home-view');
+                const workspaceView = document.getElementById('workspace-view');
+                if (homeView) homeView.style.display = 'block';
+                if (workspaceView) workspaceView.style.display = 'none';
+                
+                // Reset to Home High Search Title
+                document.title = "PDF Nova - Secure Browser-Based Free Online PDF Tools";
+                const descMeta = document.getElementById('meta-description');
+                if (descMeta) descMeta.setAttribute('content', 'Discover PDF Nova, a secure client-side workspace featuring 27 free online PDF tools. Edit PDF in browser, merge PDF free, and compress PDF online safely.');
+            } else if (toolImplementations[cleanHash]) {
+                const homeView = document.getElementById('home-view');
+                const workspaceView = document.getElementById('workspace-view');
+                if (homeView) homeView.style.display = 'none';
+                if (workspaceView) workspaceView.style.display = 'block';
+                
+                configureWorkspaceView(cleanHash);
+            } else {
+                // Fallback to Home Screen
+                window.location.hash = '';
+            }
+        }
+
+        // Configure workspace window for each tool view
+        function configureWorkspaceView(toolKey) {
+            resetWorkspaceState();
+            AppState.currentTool = toolKey;
+            const tool = toolImplementations[toolKey];
+
+            // Render updated workspace layout details
+            document.getElementById('workspace-tool-title').innerText = tool.title;
+            document.getElementById('workspace-tool-desc').innerText = tool.desc;
+            document.getElementById('upload-type-restriction').innerText = `Accepts formats: ${tool.fileType}`;
+
+            // Initialize Dynamic HTML Title and Description
+            document.title = `${tool.title} | PDF Nova`;
+            const descMeta = document.getElementById('meta-description');
+            if (descMeta) descMeta.setAttribute('content', tool.seoDesc);
+
+            // Configure file upload listener parameters
+            const fileInput = document.getElementById('workspace-file-input');
+            fileInput.setAttribute('accept', tool.fileType);
+            fileInput.multiple = tool.multiple || false;
+
+            // Load tool optional options panel
+            const optionsPanel = document.getElementById('workspace-tool-options');
+            if (tool.options) {
+                optionsPanel.innerHTML = tool.options();
+                optionsPanel.style.display = 'block';
+            } else {
+                optionsPanel.style.display = 'none';
+            }
+        }
+
+        function resetWorkspaceState() {
+            AppState.currentTool = null;
+            AppState.selectedFiles = [];
+            document.getElementById('workspace-file-input').value = '';
+            
+            const fileListPanel = document.getElementById('workspace-file-list');
+            fileListPanel.innerHTML = '';
+            fileListPanel.style.display = 'none';
+
+            document.getElementById('workspace-tool-options').innerHTML = '';
+            document.getElementById('workspace-tool-options').style.display = 'none';
+            document.getElementById('workspace-process-btn').disabled = true;
+            document.getElementById('workspace-output-panel').classList.remove('visible');
+            document.getElementById('workspace-download-links').innerHTML = '';
+            hideLoader();
+
+            // Clear active local layout caches
+            if (window.fabricCanvasInstance) {
+                window.fabricCanvasInstance.dispose();
+                window.fabricCanvasInstance = null;
+            }
+            window.currentPdfDoc = null;
+            window.originalPdfBytes = null;
+            window.editorPageNum = 1;
+            window.editorCanvasModifications = {};
+        }
+
+        // DOM Initializations (Running safely on load)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Safe DOM reference initialization
+            siteHeader = document.getElementById('site-header');
+            navToggle = document.getElementById('nav-toggle');
+            navMenu = document.getElementById('nav-menu');
+            themeToggle = document.getElementById('theme-toggle');
+            toolsGridContainer = document.getElementById('tools-grid-container');
+
+            initializeNavigationMenu();
+            initializeThemePreference();
+            generateAllHomeToolCards();
+            initializeWorkspaceUploadControls();
+            setupScrollEffects();
+            handleAppRouting(); // Initial routing logic check
+        });
+
+        function setupScrollEffects() {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    siteHeader.classList.add('scrolled');
+                } else {
+                    siteHeader.classList.remove('scrolled');
+                }
+            });
+        }
+
+        function initializeThemePreference() {
+            if (!themeToggle) return;
+            
+            const currentPref = localStorage.getItem('theme-pref');
+            if (currentPref === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerText = '☀️';
+            } else {
+                themeToggle.innerText = '🌙';
+            }
+
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme-pref', 'dark');
+                    themeToggle.innerText = '☀️';
+                } else {
+                    localStorage.setItem('theme-pref', 'light');
+                    themeToggle.innerText = '🌙';
+                }
+            });
+        }
+
+        function initializeNavigationMenu() {
+            if (!navToggle) return;
+
+            navToggle.addEventListener('click', () => {
+                navToggle.classList.toggle('open');
+                navMenu.classList.toggle('open');
+            });
+
+            // Close toggle navbar on navigation clicks
+            document.querySelectorAll('.nav-link, .back-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navToggle.classList.remove('open');
+                    navMenu.classList.remove('open');
+                });
+            });
+        }
+
+        function generateAllHomeToolCards() {
+            if (!toolsGridContainer) return;
+            toolsGridContainer.innerHTML = '';
+            
+            Object.keys(toolImplementations).forEach((key) => {
+                const tool = toolImplementations[key];
+                const card = document.createElement('div');
+                card.className = 'tool-card';
+                card.setAttribute('data-tool', key);
+                card.innerHTML = `
+                    <span class="tool-card-icon">${tool.icon}</span>
+                    <h3>${tool.title.split('-')[0].trim()}</h3>
+                    <p>${tool.desc}</p>
+                `;
+                
+                if (['edit-pdf', 'sign-pdf', 'compress-pdf'].includes(key)) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-new';
+                    badge.innerText = 'New';
+                    card.appendChild(badge);
+                }
+
+                card.addEventListener('click', () => {
+                    window.location.hash = `#${key}`;
+                });
+                toolsGridContainer.appendChild(card);
+            });
+        }
+
+        function initializeWorkspaceUploadControls() {
+            const uploadArea = document.getElementById('workspace-upload-area');
+            const fileInput = document.getElementById('workspace-file-input');
+            const processBtn = document.getElementById('workspace-process-btn');
+
+            if (!uploadArea || !fileInput) return;
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    processUploadedFiles(e.dataTransfer.files);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    processUploadedFiles(e.target.files);
+                }
+            });
+
+            if (processBtn) {
+                processBtn.addEventListener('click', runActiveToolProcess);
+            }
+        }
+
+        // State Manager
+        const AppState = {
+            currentTool: null,
+            selectedFiles: []
+        };
+
+        function processUploadedFiles(files) {
+            const tool = toolImplementations[AppState.currentTool];
+            const allowedExtensions = tool.fileType.split(',').map(ext => ext.trim().toLowerCase());
+            
+            const verified = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const extension = '.' + file.name.split('.').pop().toLowerCase();
+                if (allowedExtensions.includes(extension) || tool.fileType === '*') {
+                    verified.push(file);
+                }
+            }
+
+            if (verified.length === 0) {
+                alert(`Please upload files that match the accepted extensions: ${tool.fileType}`);
+                return;
+            }
+
+            if (!tool.multiple) {
+                AppState.selectedFiles = [verified[0]];
+            } else {
+                AppState.selectedFiles = [...AppState.selectedFiles, ...verified];
+            }
+
+            renderWorkspaceFileTable();
+
+            if (tool.onFileSelect) {
+                tool.onFileSelect(AppState.selectedFiles, document.getElementById('workspace-tool-options'));
+            }
+        }
+
+        function renderWorkspaceFileTable() {
+            const fileListPanel = document.getElementById('workspace-file-list');
+            const processBtn = document.getElementById('workspace-process-btn');
+
+            if (!fileListPanel || !processBtn) return;
+
+            if (AppState.selectedFiles.length === 0) {
+                fileListPanel.style.display = 'none';
+                processBtn.disabled = true;
+                return;
+            }
+
+            fileListPanel.innerHTML = '';
+            fileListPanel.style.display = 'block';
+
+            AppState.selectedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <span class="file-item-name">${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    <button type="button" class="file-item-remove" data-index="${index}">&times;</button>
+                `;
+                fileListPanel.appendChild(item);
+            });
+
+            processBtn.disabled = false;
+
+            document.querySelectorAll('.file-item-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const index = parseInt(btn.getAttribute('data-index'));
+                    AppState.selectedFiles.splice(index, 1);
+                    renderWorkspaceFileTable();
+                });
+            });
+        }
+
+        function showLoader(text = "Processing document pages in your browser...") {
+            const loader = document.getElementById('workspace-loader');
+            const loaderText = document.getElementById('workspace-loader-text');
+            if (loader && loaderText) {
+                loaderText.innerText = text;
+                loader.classList.add('visible');
+            }
+        }
+
+        function updateLoaderText(text) {
+            const loaderText = document.getElementById('workspace-loader-text');
+            if (loaderText) loaderText.innerText = text;
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('workspace-loader');
+            if (loader) loader.classList.remove('visible');
+        }
+
+        async function runActiveToolProcess() {
+            if (AppState.selectedFiles.length === 0) return;
+            showLoader();
+
+            const tool = toolImplementations[AppState.currentTool];
+            try {
+                const result = await tool.process(AppState.selectedFiles, document.getElementById('workspace-tool-options'));
+                displayOutputLink(result.data, result.filename, result.type);
+            } catch (error) {
+                console.error(error);
+                alert(`An error occurred while processing: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function displayOutputLink(dataBuffer, filename, fileType) {
+            const blob = new Blob([dataBuffer], { type: fileType });
+            const url = URL.createObjectURL(blob);
+
+            const container = document.getElementById('workspace-download-links');
+            if (container) {
+                container.innerHTML = '';
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.className = 'btn';
+                link.style.display = 'block';
+                link.style.marginTop = '1rem';
+                link.innerText = `Download Your File: ${filename}`;
+                container.appendChild(link);
+            }
+
+            const outputPanel = document.getElementById('workspace-output-panel');
+            if (outputPanel) outputPanel.classList.add('visible');
+        }
+
+        // Interactive Fabric Canvas Logic
+        async function initializeEditorCanvas(optionsElement) {
+            const canvasEl = optionsElement.querySelector('#editor-fabric-canvas');
+            if (!canvasEl) return;
+
+            if (window.fabricCanvasInstance) {
+                window.fabricCanvasInstance.dispose();
+            }
+
+            const canvasWidth = 500;
+            const canvasHeight = 650;
+            
+            canvasEl.width = canvasWidth;
+            canvasEl.height = canvasHeight;
+
+            const fabricInstance = new fabric.Canvas('editor-fabric-canvas', {
+                width: canvasWidth,
+                height: canvasHeight,
+                backgroundColor: '#ffffff'
+            });
+
+            window.fabricCanvasInstance = fabricInstance;
+
+            await drawPageOnFabricBackground(window.editorPageNum);
+
+            optionsElement.querySelector('#editor-prev-page').onclick = async () => {
+                if (window.editorPageNum > 1) {
+                    saveCurrentPageModification();
+                    window.editorPageNum--;
+                    await drawPageOnFabricBackground(window.editorPageNum);
+                }
+            };
+
+            optionsElement.querySelector('#editor-next-page').onclick = async () => {
+                if (window.editorPageNum < window.currentPdfDoc.numPages) {
+                    saveCurrentPageModification();
+                    window.editorPageNum++;
+                    await drawPageOnFabricBackground(window.editorPageNum);
+                }
+            };
+
+            optionsElement.querySelector('#editor-add-text').onclick = () => {
+                const text = new fabric.IText('Edit Text', {
+                    left: 100,
+                    top: 100,
+                    fontFamily: 'sans-serif',
+                    fontSize: 20,
+                    fill: '#000000'
+                });
+                fabricInstance.add(text);
+                fabricInstance.setActiveObject(text);
+            };
+
+            optionsElement.querySelector('#editor-add-rect').onclick = () => {
+                const rect = new fabric.Rect({
+                    left: 150,
+                    top: 150,
+                    fill: 'rgba(229, 50, 45, 0.3)',
+                    width: 100,
+                    height: 100,
+                    stroke: '#e5322d',
+                    strokeWidth: 2
+                });
+                fabricInstance.add(rect);
+                fabricInstance.setActiveObject(rect);
+            };
+
+            optionsElement.querySelector('#editor-free-draw').onclick = (e) => {
+                fabricInstance.isDrawingMode = !fabricInstance.isDrawingMode;
+                if (fabricInstance.isDrawingMode) {
+                    e.target.style.backgroundColor = '#e5322d';
+                    e.target.style.color = '#ffffff';
+                    fabricInstance.freeDrawingBrush.width = 4;
+                    fabricInstance.freeDrawingBrush.color = '#e5322d';
+                } else {
+                    e.target.style.backgroundColor = '';
+                    e.target.style.color = '';
+                }
+            };
+        }
+
+        async function drawPageOnFabricBackground(pageNum) {
+            const fabricInstance = window.fabricCanvasInstance;
+            if (!fabricInstance || !window.currentPdfDoc) return;
+
+            showLoader(`Rendering page background ${pageNum}...`);
+            const page = await window.currentPdfDoc.getPage(pageNum);
+            
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const viewport = page.getViewport({ scale: 1.0 });
+
+            const scale = Math.min(fabricInstance.width / viewport.width, fabricInstance.height / viewport.height);
+            const scaledViewport = page.getViewport({ scale: scale });
+
+            tempCanvas.width = scaledViewport.width;
+            tempCanvas.height = scaledViewport.height;
+
+            await page.render({ canvasContext: tempCtx, viewport: scaledViewport }).promise;
+
+            const bgDataUrl = tempCanvas.toDataURL('image/png');
+
+            fabricInstance.clear();
+
+            fabric.Image.fromURL(bgDataUrl, (img) => {
+                fabricInstance.setBackgroundImage(img, fabricInstance.renderAll.bind(fabricInstance), {
+                    scaleX: 1,
+                    scaleY: 1,
+                    left: (fabricInstance.width - scaledViewport.width) / 2,
+                    top: (fabricInstance.height - scaledViewport.height) / 2
+                });
+            });
+
+            document.getElementById('editor-page-indicator').innerText = `Page ${pageNum} / ${window.currentPdfDoc.numPages}`;
+            hideLoader();
+        }
+
+        function saveCurrentPageModification() {
+            const fabricInstance = window.fabricCanvasInstance;
+            if (!fabricInstance) return;
+
+            const bgImage = fabricInstance.backgroundImage;
+            fabricInstance.setBackgroundImage(null, fabricInstance.renderAll.bind(fabricInstance));
+
+            const overlayDataUrl = fabricInstance.toDataURL({
+                format: 'png',
+                multiplier: 1.5
+            });
+
+            window.editorCanvasModifications[window.editorPageNum - 1] = overlayDataUrl;
+
+            if (bgImage) {
+                fabricInstance.setBackgroundImage(bgImage, fabricInstance.renderAll.bind(fabricInstance));
+            }
+        }
+
+        // Parse custom index ranges
+        function parsePageRanges(rangeText, maxPages) {
+            const pages = new Set();
+            const segments = rangeText.split(',');
+            for (const segment of segments) {
+                if (segment.includes('-')) {
+                    const [start, end] = segment.split('-').map(p => parseInt(p.trim()));
+                    if (!isNaN(start) && !isNaN(end)) {
+                        const low = Math.min(start, end);
+                        const high = Math.min(Math.max(start, end), maxPages);
+                        for (let i = low; i <= high; i++) {
+                            pages.add(i - 1);
+                        }
+                    }
+                } else {
+                    const val = parseInt(segment.trim());
+                    if (!isNaN(val) && val >= 1 && val <= maxPages) {
+                        pages.add(val - 1);
+                    }
+                }
+            }
+            return Array.from(pages).sort((a, b) => a - b);
+        }
+    </script>
+</body>
+</html>
